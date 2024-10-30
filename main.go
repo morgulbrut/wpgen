@@ -22,12 +22,13 @@ func main() {
 	var (
 		sourceImg       string
 		totalCycleCount int
+		query           string
 		params          sketch.UserParams
 	)
 	flag.StringVar(&sourceImg, "i", "", "Input file (if not specified the program grabs one from the internet")
 	flag.IntVar(&totalCycleCount, "cyclecount", 5000, "")
-	flag.IntVar(&params.DestHeight, "h", 2000, "Height")
-	flag.IntVar(&params.DestWidth, "w", 2000, "Width")
+	flag.IntVar(&params.DestHeight, "h",1080, "Height")
+	flag.IntVar(&params.DestWidth, "w", 1920, "Width")
 	flag.Float64Var(&params.StrokeRatio, "strokeratio", 0.75, "")
 	flag.Float64Var(&params.InitialAlpha, "initialalpha", 0.1, "")
 	flag.Float64Var(&params.StrokeReduction, "strokereduction", 0.002, "")
@@ -40,12 +41,13 @@ func main() {
 	flag.StringVar(&params.Shape, "s", "polygon", "Shape of the elements, can be circle, square, hexagon roundedsquare or polygon")
 	flag.BoolVar(&params.Fill, "nofill", false, "Don't fill the elements")
 	flag.BoolVar(&params.Stroke, "nostroke", false, "Don't draw strokes around the elements")
+	flag.StringVar(&query, "q", "blue", "Query for the image")
 
 	flag.Parse()
 	var err error
 	var img image.Image
 	if sourceImg == "" {
-		img, err = loadRandomUnsplashImage(params.DestWidth, params.DestHeight)
+		img, err = loadRandomUnsplashImage(params.DestWidth, params.DestHeight,query)
 	} else {
 		img, err = loadImage(sourceImg)
 	}
@@ -73,8 +75,9 @@ func tempFileName(prefix, suffix string) string {
 	return filepath.Join(prefix + hex.EncodeToString(randBytes) + suffix)
 }
 
-func loadRandomUnsplashImage(width, height int) (image.Image, error) {
-	url := fmt.Sprintf("https://source.unsplash.com/random/%dx%d", width, height)
+func loadRandomUnsplashImage(width, height int,query string) (image.Image, error) {
+	// url := fmt.Sprintf("https://api.unsplash.com/random/%dx%d/?client_id=%s", width, height,accessKey)
+	url := fmt.Sprintf("https://loremflickr.com/%d/%d/%s", width, height,query)
 	color256.PrintHiCyan("Fetching %s", url)
 	res, err := http.Get(url)
 	if err != nil {
